@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nouveau Signalement</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      background: white;
+      padding: 2em;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5em;
+      color: #333;
+    }
+
+    form label {
+      display: block;
+      margin: 12px 0 5px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    form input, form select, form textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #f9f9f9;
+      font-size: 16px;
+    }
+
+    #map {
+      height: 300px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+.btn-return {
+      margin-top: 20px;
+      padding: 12px;
+      background: #1dc57f;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn-return:hover {
+      background: #0bb928;
+    }    
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Soumettre un signalement</h2>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <label for="id_titre">Titre</label>
+      {{ form.titre }}
+
+      <label for="id_description">Description</label>
+      {{ form.description }}
+
+      <label for="id_categorie">Catégorie</label>
+      {{ form.categorie }}
+
+      <label for="id_statut">Statut</label>
+      {{ form.statut }}
+      <label for="id_photo">Photo (facultatif)</label>
+      {{ form.photo }}
+
+      <label>Localisation (cliquez sur la carte)</label>
+      <div id="map"></div>
+
+      <label for="id_latitude">Latitude</label>
+      {{ form.latitude }}
+
+      <label for="id_longitude">Longitude</label>
+      {{ form.longitude }}
+
+      <button type="submit">Soumettre</button>
+      <br><br>
+      <a href="{% url 'home' %}" class="btn-return">Retour à l'accueil</a>
+    </form>
+  </div>
+
+  <script>
+    function initMap() {
+      const defaultCenter = { lat: -4.2634, lng: 15.2429 }; // Brazzaville
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 14,
+        center: defaultCenter,
+      });
+
+      let marker = new google.maps.Marker({
+        position: defaultCenter,
+        map: map,
+        draggable: true
+      });
+
+      google.maps.event.addListener(map, 'click', function(event) {
+        marker.setPosition(event.latLng);
+        document.getElementById("id_latitude").value = event.latLng.lat();
+        document.getElementById("id_longitude").value = event.latLng.lng();
+      });
+
+      marker.addListener("dragend", function() {
+        const pos = marker.getPosition();
+        document.getElementById("id_latitude").value = pos.lat();
+        document.getElementById("id_longitude").value = pos.lng();
+      });
+    }
+  </script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBYKtlqDygyn8Vg0ehWdzdoZdsyer3Czls&callback=initMap">
+  </script>
+</body>
+</html>

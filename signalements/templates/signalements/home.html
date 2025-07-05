@@ -1,0 +1,807 @@
+{% load static %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CitoyenActif – Signalement Urbain</title>
+  <link rel="icon" href="{% static 'images/CITOYEN ACTIF.png' %}" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #541554;
+      --bg: #f8f6f4;
+      --text: #1d1c1d;
+      --light: #ffffff;
+      --gray: #ddd;
+    }
+    body.dark {
+      --bg: #121212;
+      --text: #f8f6f4;
+      --light: #1d1c1d;
+      --gray: #888;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    section {
+      padding: 60px 5%;
+    }
+    h2 {
+      text-align: center;
+      color: var(--primary);
+      font-size: 32px;
+      margin-bottom: 40px;
+    }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      background: var(--light);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .stat h3 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      color: var(--primary);
+    }
+    .testimonial-list {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    blockquote {
+      max-width: 400px;
+      padding: 20px;
+      background: var(--light);
+      border-left: 5px solid var(--primary);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .newsletter form {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .newsletter input {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid var(--gray);
+      width: 300px;
+    }
+    .faq details {
+      margin-bottom: 20px;
+      background: var(--light);
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .map-container iframe {
+      border: 0;
+      width: 100%;
+      height: 350px;
+      border-radius: 10px;
+    }
+
+    #loader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: var(--light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #ccc;
+      border-top: 5px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 25px 5%;
+      flex-wrap: wrap;
+      background: var(--light);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo img {
+      width: 35px;
+      height: 35px;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    nav a {
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    .buttons a, .buttons button {
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      border: none;
+      background: transparent;
+      color: var(--primary);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-purple {
+      background: var(--primary);
+      color: white;
+      border: none;
+      width: 30%;
+      height: 30%;
+    }
+    .btn-purple:hover {
+      background: #3e0d3e;
+      color: white;
+    }
+
+    .btn-outline {
+      border: 2px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      width: 30%;
+      height: 30%;
+    }
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .theme-toggle {
+      margin-left: 20px;
+      cursor: pointer;
+      background: none;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      padding: 8px 16px;
+      border-radius: 5px;
+    }
+
+    .main-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 40px;
+      padding: 60px 5%;
+      flex-wrap: wrap;
+    }
+
+    .text-section {
+      flex: 1 1 400px;
+    }
+    .text-section h1 {
+      font-size: 42px;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+    .text-section p {
+      font-size: 18px;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+   .cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn-purple {
+  background: var(--primary);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.btn-purple:hover {
+  background: #3e0d3e;
+  color: white;
+}
+
+
+    .img-section {
+      flex: 1 1 300px;
+      background: var(--light);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .img-section img {
+      width: 100%;
+      display: block;
+      border-radius: 10px;
+    }
+
+    footer {
+      background: var(--text);
+      color: var(--gray);
+      padding: 50px 5% 30px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      justify-content: space-between;
+    }
+    .footer-section {
+      max-width: 300px;
+    }
+    .footer-section h4 {
+      color: white;
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+    .footer-section a {
+      display: block;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: var(--gray);
+      transition: color 0.3s ease;
+    }
+    .footer-section a:hover {
+      color: white;
+    }
+    .footer-bottom {
+      background: var(--primary);
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      header, .main-content, footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      nav {
+        margin: 20px 0;
+      }
+      .buttons {
+        justify-content: center;
+      }
+  .main-content {
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 5%;
+  }
+
+  .img-carousel {
+    width: 100%;
+    height: 250px;
+    margin-top: 20px;
+  }
+
+  .img-carousel img {
+    width: 100%;
+  }
+
+
+      .footer-section {
+        width: 100%;
+      }
+      nav, .buttons {
+        display: none;
+      }
+      .burger {
+        display: flex;
+      }
+    }
+    .problemes-urbains {
+  padding: 60px 5%;
+  background: var(--light);
+  text-align: center;
+}
+.problemes-urbains h2 {
+  font-size: 32px;
+  margin-bottom: 40px;
+  color: var(--primary);
+}
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+}
+.card {
+  background: var(--bg);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  width: 300px;
+  transition: transform 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+.card-content {
+  padding: 20px;
+  text-align: left;
+}
+.card-content h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: var(--primary);
+}
+.card-content p {
+  font-size: 15px;
+  margin: 5px 0;
+  color: var(--text);
+}
+.main-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  padding: 60px 5%;
+  flex-wrap: nowrap; /* ⚠️ ne pas permettre le retour à la ligne */
+}
+
+.text-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.img-carousel {
+  flex: 1;
+  min-width: 300px;
+  height: 300px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.img-carousel img {
+  position: absolute;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.img-carousel img.active {
+  display: block;
+}
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-toggle {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+  background: none;
+  gap: 10px;
+}
+
+.profile-toggle img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 45px;
+  background-color: var(--light);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  min-width: 220px;
+  z-index: 999;
+  padding: 10px;
+}
+
+.profile-menu.show {
+  display: block;
+}
+
+.profile-menu p {
+  margin: 5px 0;
+  color: var(--text);
+  font-size: 14px;
+  padding: 2px 10px;
+}
+
+.profile-menu hr {
+  margin: 10px 0;
+  border: none;
+  border-top: 1px solid var(--gray);
+}
+
+.profile-menu a.logout-btn {
+  display: block;
+  text-align: center;
+  padding: 8px;
+  color: white;
+  background: var(--primary);
+  border-radius: 5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.profile-menu a.logout-btn:hover {
+  background: #3e0d3e;
+}
+.google-btn {
+  background-color: #007bff;    /* bleu vif */
+  color: white;
+  border: 2px solid #0056b3;   /* bleu plus foncé */
+  border-radius: 8px;
+  padding: 12px 25px;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.google-btn:hover {
+  background-color: #0056b3;   /* plus foncé au survol */
+  border-color: #003d80;
+}
+
+
+  </style>
+</head>
+<body>
+<div id="loader"><div class="spinner"></div></div>
+
+<header>
+  <div class="logo">
+    <img src="{% static 'images/CITOYEN ACTIF.png' %}" alt="logo" />
+    <strong>CitoyenActif</strong>
+  </div>
+  <nav>
+  <a href="{% url 'home' %}">Accueil</a>
+
+  {% if user.is_authenticated %}
+    
+    {% if user.profile.role == "admin" %}
+      <a href="{% url 'carte' %}">Carte globale</a>
+      <a href="{% url 'dashboard' %}">Tableau de bord</a>
+    {% elif user.profile.role == "agent" %}
+      <a href="{% url 'carte' %}">Carte des signalements</a>
+      <a href="{% url 'dashboard' %}">Gestion</a>
+    {% else %}
+      <a href="{% url 'ma_carte' %}">Ma carte</a>
+      
+      <!-- SEULEMENT POUR LES NON-ADMIN: Signaler + Mes signalements -->
+      <a href="{% url 'signalement_nouveau' %}">Signaler</a>
+      <a href="{% url 'mes_signalements' %}">Mes signalements</a>
+    {% endif %}
+
+  {% else %}
+    <!-- Non connecté : affiche Signaler et Mes signalements -->
+    <a href="{% url 'signalement_nouveau' %}">Signaler</a>
+    <a href="{% url 'mes_signalements' %}">Mes signalements</a>
+  {% endif %}
+</nav>
+  <div class="buttons">
+    {% if user.is_authenticated %}
+    <div class="profile-dropdown">
+      <button class="profile-toggle" onclick="toggleProfileMenu()">
+        {% if user.profile.photo %}
+          <img src="{{ user.profile.photo|default:'/static/images/—Pngtree—default avatar_5407175.png' }}" alt="photo">
+        {% else %}
+          <img src="{% static 'images/—Pngtree—default avatar_5407175.png' %}" alt="Profil">
+        {% endif %}
+        <span>{{ user.get_full_name|default:user.username }}</span>
+      </button>
+      <div class="profile-menu" id="profileMenu">
+        <p><strong>Nom :</strong> {{ user.get_full_name|default:user.username }}</p>
+        <p><strong>Email :</strong> {{ user.email }}</p>
+        <hr>
+        <a href="{% url 'logout' %}" class="logout-btn">Déconnexion</a>
+      </div>
+    </div>
+  {% else %}
+    <a href="{% url 'login' %}" class="btn-outline">Connexion</a>
+    <a href="{% url 'register' %}" class="btn-purple">S'inscrire</a>
+  {% endif %}
+
+  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+</div>
+
+</header>
+
+<section class="main-content">
+  <div class="text-section">
+    <h1>Participez à l'amélioration de votre ville</h1>
+    <p>
+      Signalez les pannes, dangers ou anomalies dans l’espace public, et
+      contribuez à un environnement plus sûr et plus propre pour tous.
+    </p>
+  <div class="cta-buttons">
+  {% if not user.is_authenticated or user.profile.role != "admin" %}
+    <a href="{% url 'signalement_nouveau' %}" class="btn-purple">Signaler maintenant</a>
+    {% if not user.is_authenticated %}
+    <a href="{% provider_login_url 'google' %}" class="google-btn">
+      <img src="https://www.gstatic.com/images/branding/product/1x/googleg_32dp.png" width="20" alt="Google" />
+      Se connecter avec Google
+    </a>
+    {% endif %}
+  {% endif %}
+</div>
+
+
+  </div>
+  <div class="img-carousel">
+  <img class="active" src="{% static 'images/daan-mooij-91LGCVN5SAI-unsplash.jpg' %}" alt="Image 1" />
+  <img src="{% static 'images/marc-olivier-jodoin--TQUERQGUZ8-unsplash.jpg' %}" alt="Image 2" />
+  <img src="{% static 'images/war-zone-landscape-with-apocalyptic-destruction.jpg' %}" alt="Image 3" />
+  <img  src="{% static 'images/mise-au-point-selective-verticale-shot-d-un-lampadaire-dans-la-ville-de-westminster-abbey-road.jpg' %}" alt="Image 4" />
+  <img  src="{% static 'images/scene-avec-des-articles-divers-vendus-a-une-vente-de-cour-pour-des-bonnes-affaires.jpg' %}" alt="Image 5" />
+  <img  src="{% static 'images/jeune-homme-dans-la-ville-de-new-york-pendant-la-journee.jpg' %}" alt="Image 6" />
+  <img  src="{% static 'images/pompier-dans-la-lutte-contre-l-incendie-et-l-evacuation-formation-de-simulation-d-exercices-d-incendie-pour-la-securite-dans-un-condominium-ou-une-usine.jpg' %}" alt="Image 7" />
+</div>
+
+</section>
+
+<section class="problemes-urbains">
+  <h2>Problèmes Urbains Signalés</h2>
+  <div class="cards-container">
+    
+    <div class="card">
+      <img src="{% static 'images/mise-au-point-selective-verticale-shot-d-un-lampadaire-dans-la-ville-de-westminster-abbey-road.jpg' %}" alt="Lampadaire en panne">
+      <div class="card-content">
+        <h3>Lampadaire défectueux</h3>
+        <p>Un lampadaire est hors service depuis plusieurs jours à proximité du marché central.</p>
+        <p><strong>Catégorie :</strong> Lampadaire</p>
+        <p><strong>Statut :</strong> En cours</p>
+        <p style="font-size: 12px; color: gray;">Signalé le 20/06/2025 à 18h23</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="{% static 'images/marc-olivier-jodoin--TQUERQGUZ8-unsplash.jpg' %}" alt="Nid de poule">
+      <div class="card-content">
+        <h3>Nid-de-poule dangereux</h3>
+        <p>Un énorme trou sur l’avenue de la paix cause des accidents fréquents.</p>
+        <p><strong>Catégorie :</strong> Nid-de-poule</p>
+        <p><strong>Statut :</strong> Nouveau</p>
+        <p style="font-size: 12px; color: gray;">Signalé le 21/06/2025 à 10h45</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="{% static 'images/daan-mooij-91LGCVN5SAI-unsplash.jpg' %}" alt="Fuite d’eau">
+      <div class="card-content">
+        <h3>Fuite d’eau importante</h3>
+        <p>Une canalisation fuit dans la rue Mboumvou, entraînant une inondation partielle.</p>
+        <p><strong>Catégorie :</strong> Fuite d’eau</p>
+        <p><strong>Statut :</strong> Pris en charge</p>
+        <p style="font-size: 12px; color: gray;">Signalé le 22/06/2025 à 08h15</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="{% static 'images/scene-avec-des-articles-divers-vendus-a-une-vente-de-cour-pour-des-bonnes-affaires.jpg' %}" alt="Autre problème">
+      <div class="card-content">
+        <h3>Dépôt sauvage d’ordures</h3>
+        <p>Des déchets sont régulièrement déposés près de l’école primaire sans intervention.</p>
+        <p><strong>Catégorie :</strong> Autre</p>
+        <p><strong>Statut :</strong> Rejeté</p>
+        <p style="font-size: 12px; color: gray;">Signalé le 18/06/2025 à 14h00</p>
+      </div>
+    </div>
+
+    <div class="card">
+  <img src="{% static 'images/war-zone-landscape-with-apocalyptic-destruction.jpg' %}" alt="Érosion de sol">
+  <div class="card-content">
+    <h3>Érosion de sol</h3>
+    <p>Une forte érosion a endommagé la chaussée sur l’avenue Nganga Edouard, mettant en danger les usagers.</p>
+    <p><strong>Catégorie :</strong> Autre</p>
+    <p><strong>Statut :</strong> Nouveau</p>
+    <p style="font-size: 12px; color: gray;">Signalé le 25/06/2025 à 16h40</p>
+  </div>
+</div>
+
+    <div class="card">
+  <img src="{% static 'images/pompier-dans-la-lutte-contre-l-incendie-et-l-evacuation-formation-de-simulation-d-exercices-d-incendie-pour-la-securite-dans-un-condominium-ou-une-usine.jpg' %}" alt="Incendie urbain">
+  <div class="card-content">
+    <h3>Incendie urbain</h3>
+    <p>Un incendie s’est déclaré dans un entrepôt au quartier Moukondo, provoquant d’importants dégâts matériels.</p>
+    <p><strong>Catégorie :</strong> Autre</p>
+    <p><strong>Statut :</strong> Résolu</p>
+    <p style="font-size: 12px; color: gray;">Signalé le 23/06/2025 à 22h10</p>
+  </div>
+</div>
+
+  </div>
+</section>
+
+<section class="stats-section">
+  <h2>Impact de la communauté</h2>
+  <div class="stats">
+    <div class="stat">
+      <h3>345</h3>
+      <p>Problèmes signalés</p>
+    </div>
+    <div class="stat">
+      <h3>127</h3>
+      <p>Problèmes résolus</p>
+    </div>
+    <div class="stat">
+      <h3>87</h3>
+      <p>Utilisateurs actifs</p>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials">
+  <h2>Ce que disent les citoyens</h2>
+  <div class="testimonial-list">
+    <blockquote>
+      <p>"Grâce à CitoyenActif, un nid-de-poule devant chez moi a été réparé en 3 jours."</p>
+      <footer>— Jules M., Brazzaville</footer>
+    </blockquote>
+    <blockquote>
+      <p>"Enfin une plateforme où notre voix compte vraiment !"</p>
+      <footer>— Carine N., Bacongo</footer>
+    </blockquote>
+  </div>
+</section>
+
+<section class="newsletter">
+  <h2>Restez informé</h2>
+  <p style="text-align: center">Recevez les actualités et alertes sur les problèmes résolus près de chez vous.</p>
+  <form method="post">
+    {% csrf_token %}
+    <input type="email" placeholder="Votre adresse email" required />
+    <button type="submit" class="btn-purple">S’inscrire</button>
+  </form>
+</section>
+
+<section class="map-preview">
+  <h2>Carte démonstrative</h2>
+  <div class="map-container">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18..." allowfullscreen loading="lazy"></iframe>
+  </div>
+</section>
+
+<section class="faq">
+  <h2>Questions Fréquentes</h2>
+  <details>
+    <summary>Comment signaler un problème ?</summary>
+    <p>Allez dans "Signaler", remplissez le formulaire, ajoutez une photo et validez.</p>
+  </details>
+  <details>
+    <summary>Qui traite les signalements ?</summary>
+    <p>Les services municipaux partenaires reçoivent les alertes automatiquement.</p>
+  </details>
+</section>
+
+<footer>
+  <div class="footer-section">
+    <h4>À propos</h4>
+    <p>
+      CitoyenActif est une plateforme de signalement citoyen pour rendre nos
+      villes plus sûres et mieux entretenues.
+    </p>
+  </div>
+  <div class="footer-section">
+    <h4>Liens rapides</h4>
+    <a href="{% url 'home' %}">Accueil</a>
+    <a href="{% url 'signalement_nouveau' %}">Signaler un problème</a>
+    <a href="{% url 'carte' %}">Carte</a>
+    {% if user.is_authenticated and user.is_staff %}
+  <a href="{% url 'dashboard' %}">Tableau de bord</a>
+{% endif %}
+
+  </div>
+  <div class="footer-section">
+    <h4>Contact</h4>
+    <p>Email : mantonych17@gmail.com</p>
+    <p>Téléphone : +242 06 6421788</p>
+    <p>Adresse : Brazzaville, Congo</p>
+  </div>
+</footer>
+
+<div class="footer-bottom">
+  &copy; 2025 CitoyenActif. Tous droits réservés.
+</div>
+
+<script>
+    const images = document.querySelectorAll('.img-carousel img');
+  let current = 0;
+
+  setInterval(() => {
+    images[current].classList.remove('active');
+    current = (current + 1) % images.length;
+    images[current].classList.add('active');
+  }, 3000); // change every 3 seconds
+  window.addEventListener('load', () => {
+    document.getElementById('loader').style.display = 'none';
+  });
+  function toggleTheme() {
+    document.body.classList.toggle('dark');
+  }
+  function toggleProfileMenu() {
+    const menu = document.getElementById('profileMenu');
+    menu.classList.toggle('show');
+  }
+
+  // Ferme le menu si on clique ailleurs
+  window.addEventListener('click', function (e) {
+    const menu = document.getElementById('profileMenu');
+    const toggle = document.querySelector('.profile-toggle');
+    if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+      menu.classList.remove('show');
+    }
+  });
+</script>
+</body>
+</html>

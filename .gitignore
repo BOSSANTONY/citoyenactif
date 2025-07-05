@@ -1,0 +1,22 @@
+# Environnement virtuel
+env/
+venv/
+ENV/
+.venv/
+
+# Fichiers pyc
+*.pyc
+__pycache__/
+
+# Fichiers de migrations (optionnel)
+*/migrations/
+
+# SQLite (si tu l’utilises)
+db.sqlite3
+
+# Fichiers système Windows
+Thumbs.db
+.DS_Store
+
+# Config VSCode (optionnel)
+.vscode/

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ma Carte de Signalements</title>
+    <style>
+        #map {
+            height: 90vh;
+            width: 100%;
+            margin: 0 auto;
+            border: 2px solid #333;
+            border-radius: 8px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px;
+            background: #eef2f7;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+               .btn-return {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 30px;
+  background: #007bff;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  z-index: 1000; /* reste au-dessus du contenu */
+}
+
+.btn-return:hover {
+  background: #0056b3;
+}
+    </style>
+</head>
+<body>
+    <h1>Mes Signalements sur la Carte</h1>
+    <div id="map"></div>
+
+    <script>
+        const signalements = [
+            {% for s in signalements %}
+            {
+                titre: "{{ s.titre|escapejs }}",
+                latitude: {{ s.latitude }},
+                longitude: {{ s.longitude }},
+                categorie: "{{ s.categorie|escapejs }}",
+                statut: "{{ s.statut|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        function initMap() {
+            const center = signalements.length > 0 ? 
+                { lat: signalements[0].latitude, lng: signalements[0].longitude } : 
+                { lat: -4.267, lng: 15.283 };
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: center,
+            });
+
+            signalements.forEach(s => {
+                const marker = new google.maps.Marker({
+                    position: { lat: s.latitude, lng: s.longitude },
+                    map: map,
+                    title: s.titre,
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<strong>${s.titre}</strong><br>Catégorie : ${s.categorie}<br>Statut : ${s.statut}`
+                });
+
+                marker.addListener("click", () => {
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
+    </script>
+
+    <script async
+      src="https://maps.googleapis.com/maps/api/js?key={{ AIzaSyBYKtlqDygyn8Vg0ehWdzdoZdsyer3Czls }}&callback=initMap">
+    </script>
+    <a href="{% url 'home' %}" class="btn-return">Retour à l'accueil</a>
+</body>
+</html>
