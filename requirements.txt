@@ -1,0 +1,21 @@
+# requirements.txt
+
+# Version Python spécifiée dans ton environnement (virtualenv ou conda) : 3.13.0 (à gérer dans ton environnement, pas dans ce fichier)
+
+Django==5.2.3
+django-allauth>=0.51.0
+# django-allauth nécessite généralement aussi ces paquets:
+requests>=2.0.0
+sqlparse>=0.4.0
+asgiref>=3.6.0
+
+# Si tu utilises une base de données PostgreSQL par exemple:
+psycopg2-binary>=2.9.6
+
+# Pour la gestion des fichiers statiques ou media (optionnel selon projet)
+# Pillow>=9.0.0
+
+# Si tu utilises crispy forms (souvent utilisé avec allauth pour beaux formulaires)
+django-crispy-forms>=1.14.0
+
+# Autres dépendances possibles selon ton projet...
